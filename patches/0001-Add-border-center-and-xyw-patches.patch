@@ -1,0 +1,2208 @@
+From e54a8e51c66ee483368e26f4ab114d95cf79e2f5 Mon Sep 17 00:00:00 2001
+From: LeelaPakanati <LeelaPakanati.gmail.com>
+Date: Sun, 19 Jan 2020 04:24:27 -0500
+Subject: [PATCH 1/2] Add border, center, and xyw patches
+
+---
+ config.def.h                               |   4 +
+ config.def.h.orig                          |  24 +
+ config.h                                   |  27 +
+ dmenu                                      | Bin 0 -> 44064 bytes
+ dmenu.1                                    |  39 +
+ dmenu.c                                    |  52 +-
+ dmenu.c.orig                               | 801 +++++++++++++++++++++
+ dmenu.o                                    | Bin 0 -> 34960 bytes
+ drw.o                                      | Bin 0 -> 10456 bytes
+ patches/dmenu-border-4.9.diff              |  25 +
+ patches/dmenu-center-20191105-f1ca0d0.diff | 119 +++
+ patches/dmenu-xyw-4.7.diff                 |  91 +++
+ stest                                      | Bin 0 -> 17680 bytes
+ stest.o                                    | Bin 0 -> 5280 bytes
+ util.o                                     | Bin 0 -> 2208 bytes
+ 15 files changed, 1174 insertions(+), 8 deletions(-)
+ create mode 100644 config.def.h.orig
+ create mode 100644 config.h
+ create mode 100755 dmenu
+ create mode 100644 dmenu.c.orig
+ create mode 100644 dmenu.o
+ create mode 100644 drw.o
+ create mode 100644 patches/dmenu-border-4.9.diff
+ create mode 100644 patches/dmenu-center-20191105-f1ca0d0.diff
+ create mode 100644 patches/dmenu-xyw-4.7.diff
+ create mode 100755 stest
+ create mode 100644 stest.o
+ create mode 100644 util.o
+
+diff --git a/config.def.h b/config.def.h
+index 1edb647..7396732 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -2,6 +2,7 @@
+ /* Default settings; can be overriden by command line. */
+ 
+ static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
++static int centered = 0;                    /* -c option; centers dmenu on screen */
+ /* -fn option overrides fonts[0]; default X11 font or font set */
+ static const char *fonts[] = {
+ 	"monospace:size=10"
+@@ -21,3 +22,6 @@ static unsigned int lines      = 0;
+  * for example: " /?\"&[]"
+  */
+ static const char worddelimiters[] = " ";
++
++/* Size of the window border */
++static const unsigned int border_width = 5;
+diff --git a/config.def.h.orig b/config.def.h.orig
+new file mode 100644
+index 0000000..7ee3247
+--- /dev/null
++++ b/config.def.h.orig
+@@ -0,0 +1,24 @@
++/* See LICENSE file for copyright and license details. */
++/* Default settings; can be overriden by command line. */
++
++static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
++static int centered = 0;                    /* -c option; centers dmenu on screen */
++/* -fn option overrides fonts[0]; default X11 font or font set */
++static const char *fonts[] = {
++	"monospace:size=10"
++};
++static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
++static const char *colors[SchemeLast][2] = {
++	/*     fg         bg       */
++	[SchemeNorm] = { "#bbbbbb", "#222222" },
++	[SchemeSel] = { "#eeeeee", "#005577" },
++	[SchemeOut] = { "#000000", "#00ffff" },
++};
++/* -l option; if nonzero, dmenu uses vertical list with given number of lines */
++static unsigned int lines      = 0;
++
++/*
++ * Characters not considered part of a word while deleting words
++ * for example: " /?\"&[]"
++ */
++static const char worddelimiters[] = " ";
+diff --git a/config.h b/config.h
+new file mode 100644
+index 0000000..7396732
+--- /dev/null
++++ b/config.h
+@@ -0,0 +1,27 @@
++/* See LICENSE file for copyright and license details. */
++/* Default settings; can be overriden by command line. */
++
++static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
++static int centered = 0;                    /* -c option; centers dmenu on screen */
++/* -fn option overrides fonts[0]; default X11 font or font set */
++static const char *fonts[] = {
++	"monospace:size=10"
++};
++static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
++static const char *colors[SchemeLast][2] = {
++	/*     fg         bg       */
++	[SchemeNorm] = { "#bbbbbb", "#222222" },
++	[SchemeSel] = { "#eeeeee", "#005577" },
++	[SchemeOut] = { "#000000", "#00ffff" },
++};
++/* -l option; if nonzero, dmenu uses vertical list with given number of lines */
++static unsigned int lines      = 0;
++
++/*
++ * Characters not considered part of a word while deleting words
++ * for example: " /?\"&[]"
++ */
++static const char worddelimiters[] = " ";
++
++/* Size of the window border */
++static const unsigned int border_width = 5;
+diff --git a/dmenu b/dmenu
+new file mode 100755
+index 0000000000000000000000000000000000000000..8ca7ed506aec868ce637a70c7cb744f20b6042d1
+GIT binary patch
+literal 44064
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/dmenu.1 b/dmenu.1
+index 323f93c..f1bf1fd 100644
+--- a/dmenu.1
++++ b/dmenu.1
+@@ -40,6 +40,9 @@ which lists programs in the user's $PATH and runs the result in their $SHELL.
+ .B \-b
+ dmenu appears at the bottom of the screen.
+ .TP
++.B \-c
++dmenu appears centered on the screen.
++.TP
+ .B \-f
+ dmenu grabs the keyboard before reading stdin if not reading from a tty. This
+ is faster, but will lock up X until stdin reaches end\-of\-file.
+@@ -50,6 +53,42 @@ dmenu matches menu items case insensitively.
+ .BI \-l " lines"
+ dmenu lists items vertically, with the given number of lines.
+ .TP
++.BI \-x " xoffset"
++dmenu is placed at this offset measured from the left side of the monitor.
++Can be negative.
++If option
++.B \-m
++is present, the measurement will use the given monitor.
++.TP
++.BI \-y " yoffset"
++dmenu is placed at this offset measured from the top of the monitor.  If the
++.B \-b
++option is used, the offset is measured from the bottom.  Can be negative.
++If option
++.B \-m
++is present, the measurement will use the given monitor.
++.TP
++.BI \-w " width"
++sets the width of the dmenu window.
++.TP
++.BI \-x " xoffset"
++dmenu is placed at this offset measured from the left side of the monitor.
++Can be negative.
++If option
++.B \-m
++is present, the measurement will use the given monitor.
++.TP
++.BI \-y " yoffset"
++dmenu is placed at this offset measured from the top of the monitor.  If the
++.B \-b
++option is used, the offset is measured from the bottom.  Can be negative.
++If option
++.B \-m
++is present, the measurement will use the given monitor.
++.TP
++.BI \-w " width"
++sets the width of the dmenu window.
++.TP
+ .BI \-m " monitor"
+ dmenu is displayed on the monitor number supplied. Monitor numbers are starting
+ from 0.
+diff --git a/dmenu.c b/dmenu.c
+index 6b8f51b..6b035aa 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -37,6 +37,9 @@ struct item {
+ static char text[BUFSIZ] = "";
+ static char *embed;
+ static int bh, mw, mh;
++static int dmx = 0; /* put dmenu at this x offset */
++static int dmy = 0; /* put dmenu at this y offset (measured from the bottom if topbar is 0) */
++static unsigned int dmw = 0; /* make dmenu this wide */
+ static int inputw = 0, promptw;
+ static int lrpad; /* sum of left and right padding */
+ static size_t cursor;
+@@ -89,6 +92,15 @@ calcoffsets(void)
+ 			break;
+ }
+ 
++static int
++max_textw(void)
++{
++	int len = 0;
++	for (struct item *item = items; item && item->text; item++)
++		len = MAX(TEXTW(item->text), len);
++	return len;
++}
++
+ static void
+ cleanup(void)
+ {
+@@ -606,6 +618,7 @@ setup(void)
+ 	bh = drw->fonts->h + 2;
+ 	lines = MAX(lines, 0);
+ 	mh = (lines + 1) * bh;
++	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
+ #ifdef XINERAMA
+ 	i = 0;
+ 	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
+@@ -632,9 +645,16 @@ setup(void)
+ 				if (INTERSECT(x, y, 1, 1, info[i]))
+ 					break;
+ 
+-		x = info[i].x_org;
+-		y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
+-		mw = info[i].width;
++		if (centered) {
++			mw = MIN(MAX(max_textw() + promptw, 100), info[i].width);
++			x = info[i].x_org + ((info[i].width  - mw) / 2);
++			y = info[i].y_org + ((info[i].height - mh) / 2);
++		} else {
++			x = info[i].x_org + dmx;
++            y = info[i].y_org + (topbar ? dmy : info[i].height - mh - dmy);
++            mw = (dmw>0 ? dmw : info[i].width);
++		}
++
+ 		XFree(info);
+ 	} else
+ #endif
+@@ -642,11 +662,17 @@ setup(void)
+ 		if (!XGetWindowAttributes(dpy, parentwin, &wa))
+ 			die("could not get embedding window attributes: 0x%lx",
+ 			    parentwin);
+-		x = 0;
+-		y = topbar ? 0 : wa.height - mh;
+-		mw = wa.width;
++
++		if (centered) {
++			mw = MIN(MAX(max_textw() + promptw, 100), wa.width);
++			x = (wa.width  - mw) / 2;
++			y = (wa.height - mh) / 2;
++		} else {
++            x = dmx;
++            y = topbar ? dmy : wa.height - mh - dmy;
++            mw = (dmw>0 ? dmw : wa.width);
++		}
+ 	}
+-	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
+ 	inputw = MIN(inputw, mw/3);
+ 	match();
+ 
+@@ -654,9 +680,10 @@ setup(void)
+ 	swa.override_redirect = True;
+ 	swa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
+ 	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
+-	win = XCreateWindow(dpy, parentwin, x, y, mw, mh, 0,
++	win = XCreateWindow(dpy, parentwin, x, y, mw, mh, border_width,
+ 	                    CopyFromParent, CopyFromParent, CopyFromParent,
+ 	                    CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
++	XSetWindowBorder(dpy, win, scheme[SchemeSel][ColBg].pixel);
+ 	XSetClassHint(dpy, win, &ch);
+ 
+ 	/* open input methods */
+@@ -683,6 +710,7 @@ static void
+ usage(void)
+ {
+ 	fputs("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
++	      "             [-x xoffset] [-y yoffset] [-wd width]\n"
+ 	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
+ 	exit(1);
+ }
+@@ -702,6 +730,8 @@ main(int argc, char *argv[])
+ 			topbar = 0;
+ 		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
+ 			fast = 1;
++		else if (!strcmp(argv[i], "-c"))   /* centers dmenu on screen */
++			centered = 1;
+ 		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
+ 			fstrncmp = strncasecmp;
+ 			fstrstr = cistrstr;
+@@ -710,6 +740,12 @@ main(int argc, char *argv[])
+ 		/* these options take one argument */
+ 		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
+ 			lines = atoi(argv[++i]);
++		else if (!strcmp(argv[i], "-x"))   /* window x offset */
++			dmx = atoi(argv[++i]);
++		else if (!strcmp(argv[i], "-y"))   /* window y offset (from bottom up if -b) */
++			dmy = atoi(argv[++i]);
++		else if (!strcmp(argv[i], "-wd"))   /* make dmenu this wide */
++			dmw = atoi(argv[++i]);
+ 		else if (!strcmp(argv[i], "-m"))
+ 			mon = atoi(argv[++i]);
+ 		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
+diff --git a/dmenu.c.orig b/dmenu.c.orig
+new file mode 100644
+index 0000000..53ced00
+--- /dev/null
++++ b/dmenu.c.orig
+@@ -0,0 +1,801 @@
++/* See LICENSE file for copyright and license details. */
++#include <ctype.h>
++#include <locale.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <strings.h>
++#include <time.h>
++#include <unistd.h>
++
++#include <X11/Xlib.h>
++#include <X11/Xatom.h>
++#include <X11/Xutil.h>
++#ifdef XINERAMA
++#include <X11/extensions/Xinerama.h>
++#endif
++#include <X11/Xft/Xft.h>
++
++#include "drw.h"
++#include "util.h"
++
++/* macros */
++#define INTERSECT(x,y,w,h,r)  (MAX(0, MIN((x)+(w),(r).x_org+(r).width)  - MAX((x),(r).x_org)) \
++                             * MAX(0, MIN((y)+(h),(r).y_org+(r).height) - MAX((y),(r).y_org)))
++#define LENGTH(X)             (sizeof X / sizeof X[0])
++#define TEXTW(X)              (drw_fontset_getwidth(drw, (X)) + lrpad)
++
++/* enums */
++enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
++
++struct item {
++	char *text;
++	struct item *left, *right;
++	int out;
++};
++
++static char text[BUFSIZ] = "";
++static char *embed;
++static int bh, mw, mh;
++static int dmx = 0; /* put dmenu at this x offset */
++static int dmy = 0; /* put dmenu at this y offset (measured from the bottom if topbar is 0) */
++static unsigned int dmw = 0; /* make dmenu this wide */
++static int inputw = 0, promptw;
++static int lrpad; /* sum of left and right padding */
++static size_t cursor;
++static struct item *items = NULL;
++static struct item *matches, *matchend;
++static struct item *prev, *curr, *next, *sel;
++static int mon = -1, screen;
++
++static Atom clip, utf8;
++static Display *dpy;
++static Window root, parentwin, win;
++static XIC xic;
++
++static Drw *drw;
++static Clr *scheme[SchemeLast];
++
++#include "config.h"
++
++static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
++static char *(*fstrstr)(const char *, const char *) = strstr;
++
++static void
++appenditem(struct item *item, struct item **list, struct item **last)
++{
++	if (*last)
++		(*last)->right = item;
++	else
++		*list = item;
++
++	item->left = *last;
++	item->right = NULL;
++	*last = item;
++}
++
++static void
++calcoffsets(void)
++{
++	int i, n;
++
++	if (lines > 0)
++		n = lines * bh;
++	else
++		n = mw - (promptw + inputw + TEXTW("<") + TEXTW(">"));
++	/* calculate which items will begin the next page and previous page */
++	for (i = 0, next = curr; next; next = next->right)
++		if ((i += (lines > 0) ? bh : MIN(TEXTW(next->text), n)) > n)
++			break;
++	for (i = 0, prev = curr; prev && prev->left; prev = prev->left)
++		if ((i += (lines > 0) ? bh : MIN(TEXTW(prev->left->text), n)) > n)
++			break;
++}
++
++static int
++max_textw(void)
++{
++	int len = 0;
++	for (struct item *item = items; item && item->text; item++)
++		len = MAX(TEXTW(item->text), len);
++	return len;
++}
++
++static void
++cleanup(void)
++{
++	size_t i;
++
++	XUngrabKey(dpy, AnyKey, AnyModifier, root);
++	for (i = 0; i < SchemeLast; i++)
++		free(scheme[i]);
++	drw_free(drw);
++	XSync(dpy, False);
++	XCloseDisplay(dpy);
++}
++
++static char *
++cistrstr(const char *s, const char *sub)
++{
++	size_t len;
++
++	for (len = strlen(sub); *s; s++)
++		if (!strncasecmp(s, sub, len))
++			return (char *)s;
++	return NULL;
++}
++
++static int
++drawitem(struct item *item, int x, int y, int w)
++{
++	if (item == sel)
++		drw_setscheme(drw, scheme[SchemeSel]);
++	else if (item->out)
++		drw_setscheme(drw, scheme[SchemeOut]);
++	else
++		drw_setscheme(drw, scheme[SchemeNorm]);
++
++	return drw_text(drw, x, y, w, bh, lrpad / 2, item->text, 0);
++}
++
++static void
++drawmenu(void)
++{
++	unsigned int curpos;
++	struct item *item;
++	int x = 0, y = 0, w;
++
++	drw_setscheme(drw, scheme[SchemeNorm]);
++	drw_rect(drw, 0, 0, mw, mh, 1, 1);
++
++	if (prompt && *prompt) {
++		drw_setscheme(drw, scheme[SchemeSel]);
++		x = drw_text(drw, x, 0, promptw, bh, lrpad / 2, prompt, 0);
++	}
++	/* draw input field */
++	w = (lines > 0 || !matches) ? mw - x : inputw;
++	drw_setscheme(drw, scheme[SchemeNorm]);
++	drw_text(drw, x, 0, w, bh, lrpad / 2, text, 0);
++
++	curpos = TEXTW(text) - TEXTW(&text[cursor]);
++	if ((curpos += lrpad / 2 - 1) < w) {
++		drw_setscheme(drw, scheme[SchemeNorm]);
++		drw_rect(drw, x + curpos, 2, 2, bh - 4, 1, 0);
++	}
++
++	if (lines > 0) {
++		/* draw vertical list */
++		for (item = curr; item != next; item = item->right)
++			drawitem(item, x, y += bh, mw - x);
++	} else if (matches) {
++		/* draw horizontal list */
++		x += inputw;
++		w = TEXTW("<");
++		if (curr->left) {
++			drw_setscheme(drw, scheme[SchemeNorm]);
++			drw_text(drw, x, 0, w, bh, lrpad / 2, "<", 0);
++		}
++		x += w;
++		for (item = curr; item != next; item = item->right)
++			x = drawitem(item, x, 0, MIN(TEXTW(item->text), mw - x - TEXTW(">")));
++		if (next) {
++			w = TEXTW(">");
++			drw_setscheme(drw, scheme[SchemeNorm]);
++			drw_text(drw, mw - w, 0, w, bh, lrpad / 2, ">", 0);
++		}
++	}
++	drw_map(drw, win, 0, 0, mw, mh);
++}
++
++static void
++grabfocus(void)
++{
++	struct timespec ts = { .tv_sec = 0, .tv_nsec = 10000000  };
++	Window focuswin;
++	int i, revertwin;
++
++	for (i = 0; i < 100; ++i) {
++		XGetInputFocus(dpy, &focuswin, &revertwin);
++		if (focuswin == win)
++			return;
++		XSetInputFocus(dpy, win, RevertToParent, CurrentTime);
++		nanosleep(&ts, NULL);
++	}
++	die("cannot grab focus");
++}
++
++static void
++grabkeyboard(void)
++{
++	struct timespec ts = { .tv_sec = 0, .tv_nsec = 1000000  };
++	int i;
++
++	if (embed)
++		return;
++	/* try to grab keyboard, we may have to wait for another process to ungrab */
++	for (i = 0; i < 1000; i++) {
++		if (XGrabKeyboard(dpy, DefaultRootWindow(dpy), True, GrabModeAsync,
++		                  GrabModeAsync, CurrentTime) == GrabSuccess)
++			return;
++		nanosleep(&ts, NULL);
++	}
++	die("cannot grab keyboard");
++}
++
++static void
++match(void)
++{
++	static char **tokv = NULL;
++	static int tokn = 0;
++
++	char buf[sizeof text], *s;
++	int i, tokc = 0;
++	size_t len, textsize;
++	struct item *item, *lprefix, *lsubstr, *prefixend, *substrend;
++
++	strcpy(buf, text);
++	/* separate input text into tokens to be matched individually */
++	for (s = strtok(buf, " "); s; tokv[tokc - 1] = s, s = strtok(NULL, " "))
++		if (++tokc > tokn && !(tokv = realloc(tokv, ++tokn * sizeof *tokv)))
++			die("cannot realloc %u bytes:", tokn * sizeof *tokv);
++	len = tokc ? strlen(tokv[0]) : 0;
++
++	matches = lprefix = lsubstr = matchend = prefixend = substrend = NULL;
++	textsize = strlen(text) + 1;
++	for (item = items; item && item->text; item++) {
++		for (i = 0; i < tokc; i++)
++			if (!fstrstr(item->text, tokv[i]))
++				break;
++		if (i != tokc) /* not all tokens match */
++			continue;
++		/* exact matches go first, then prefixes, then substrings */
++		if (!tokc || !fstrncmp(text, item->text, textsize))
++			appenditem(item, &matches, &matchend);
++		else if (!fstrncmp(tokv[0], item->text, len))
++			appenditem(item, &lprefix, &prefixend);
++		else
++			appenditem(item, &lsubstr, &substrend);
++	}
++	if (lprefix) {
++		if (matches) {
++			matchend->right = lprefix;
++			lprefix->left = matchend;
++		} else
++			matches = lprefix;
++		matchend = prefixend;
++	}
++	if (lsubstr) {
++		if (matches) {
++			matchend->right = lsubstr;
++			lsubstr->left = matchend;
++		} else
++			matches = lsubstr;
++		matchend = substrend;
++	}
++	curr = sel = matches;
++	calcoffsets();
++}
++
++static void
++insert(const char *str, ssize_t n)
++{
++	if (strlen(text) + n > sizeof text - 1)
++		return;
++	/* move existing text out of the way, insert new text, and update cursor */
++	memmove(&text[cursor + n], &text[cursor], sizeof text - cursor - MAX(n, 0));
++	if (n > 0)
++		memcpy(&text[cursor], str, n);
++	cursor += n;
++	match();
++}
++
++static size_t
++nextrune(int inc)
++{
++	ssize_t n;
++
++	/* return location of next utf8 rune in the given direction (+1 or -1) */
++	for (n = cursor + inc; n + inc >= 0 && (text[n] & 0xc0) == 0x80; n += inc)
++		;
++	return n;
++}
++
++static void
++movewordedge(int dir)
++{
++	if (dir < 0) { /* move cursor to the start of the word*/
++		while (cursor > 0 && strchr(worddelimiters, text[nextrune(-1)]))
++			cursor = nextrune(-1);
++		while (cursor > 0 && !strchr(worddelimiters, text[nextrune(-1)]))
++			cursor = nextrune(-1);
++	} else { /* move cursor to the end of the word */
++		while (text[cursor] && strchr(worddelimiters, text[cursor]))
++			cursor = nextrune(+1);
++		while (text[cursor] && !strchr(worddelimiters, text[cursor]))
++			cursor = nextrune(+1);
++	}
++}
++
++static void
++keypress(XKeyEvent *ev)
++{
++	char buf[32];
++	int len;
++	KeySym ksym;
++	Status status;
++
++	len = XmbLookupString(xic, ev, buf, sizeof buf, &ksym, &status);
++	switch (status) {
++	default: /* XLookupNone, XBufferOverflow */
++		return;
++	case XLookupChars:
++		goto insert;
++	case XLookupKeySym:
++	case XLookupBoth:
++		break;
++	}
++
++	if (ev->state & ControlMask) {
++		switch(ksym) {
++		case XK_a: ksym = XK_Home;      break;
++		case XK_b: ksym = XK_Left;      break;
++		case XK_c: ksym = XK_Escape;    break;
++		case XK_d: ksym = XK_Delete;    break;
++		case XK_e: ksym = XK_End;       break;
++		case XK_f: ksym = XK_Right;     break;
++		case XK_g: ksym = XK_Escape;    break;
++		case XK_h: ksym = XK_BackSpace; break;
++		case XK_i: ksym = XK_Tab;       break;
++		case XK_j: /* fallthrough */
++		case XK_J: /* fallthrough */
++		case XK_m: /* fallthrough */
++		case XK_M: ksym = XK_Return; ev->state &= ~ControlMask; break;
++		case XK_n: ksym = XK_Down;      break;
++		case XK_p: ksym = XK_Up;        break;
++
++		case XK_k: /* delete right */
++			text[cursor] = '\0';
++			match();
++			break;
++		case XK_u: /* delete left */
++			insert(NULL, 0 - cursor);
++			break;
++		case XK_w: /* delete word */
++			while (cursor > 0 && strchr(worddelimiters, text[nextrune(-1)]))
++				insert(NULL, nextrune(-1) - cursor);
++			while (cursor > 0 && !strchr(worddelimiters, text[nextrune(-1)]))
++				insert(NULL, nextrune(-1) - cursor);
++			break;
++		case XK_y: /* paste selection */
++		case XK_Y:
++			XConvertSelection(dpy, (ev->state & ShiftMask) ? clip : XA_PRIMARY,
++			                  utf8, utf8, win, CurrentTime);
++			return;
++		case XK_Left:
++			movewordedge(-1);
++			goto draw;
++		case XK_Right:
++			movewordedge(+1);
++			goto draw;
++		case XK_Return:
++		case XK_KP_Enter:
++			break;
++		case XK_bracketleft:
++			cleanup();
++			exit(1);
++		default:
++			return;
++		}
++	} else if (ev->state & Mod1Mask) {
++		switch(ksym) {
++		case XK_b:
++			movewordedge(-1);
++			goto draw;
++		case XK_f:
++			movewordedge(+1);
++			goto draw;
++		case XK_g: ksym = XK_Home;  break;
++		case XK_G: ksym = XK_End;   break;
++		case XK_h: ksym = XK_Up;    break;
++		case XK_j: ksym = XK_Next;  break;
++		case XK_k: ksym = XK_Prior; break;
++		case XK_l: ksym = XK_Down;  break;
++		default:
++			return;
++		}
++	}
++
++	switch(ksym) {
++	default:
++insert:
++		if (!iscntrl(*buf))
++			insert(buf, len);
++		break;
++	case XK_Delete:
++		if (text[cursor] == '\0')
++			return;
++		cursor = nextrune(+1);
++		/* fallthrough */
++	case XK_BackSpace:
++		if (cursor == 0)
++			return;
++		insert(NULL, nextrune(-1) - cursor);
++		break;
++	case XK_End:
++		if (text[cursor] != '\0') {
++			cursor = strlen(text);
++			break;
++		}
++		if (next) {
++			/* jump to end of list and position items in reverse */
++			curr = matchend;
++			calcoffsets();
++			curr = prev;
++			calcoffsets();
++			while (next && (curr = curr->right))
++				calcoffsets();
++		}
++		sel = matchend;
++		break;
++	case XK_Escape:
++		cleanup();
++		exit(1);
++	case XK_Home:
++		if (sel == matches) {
++			cursor = 0;
++			break;
++		}
++		sel = curr = matches;
++		calcoffsets();
++		break;
++	case XK_Left:
++		if (cursor > 0 && (!sel || !sel->left || lines > 0)) {
++			cursor = nextrune(-1);
++			break;
++		}
++		if (lines > 0)
++			return;
++		/* fallthrough */
++	case XK_Up:
++		if (sel && sel->left && (sel = sel->left)->right == curr) {
++			curr = prev;
++			calcoffsets();
++		}
++		break;
++	case XK_Next:
++		if (!next)
++			return;
++		sel = curr = next;
++		calcoffsets();
++		break;
++	case XK_Prior:
++		if (!prev)
++			return;
++		sel = curr = prev;
++		calcoffsets();
++		break;
++	case XK_Return:
++	case XK_KP_Enter:
++		puts((sel && !(ev->state & ShiftMask)) ? sel->text : text);
++		if (!(ev->state & ControlMask)) {
++			cleanup();
++			exit(0);
++		}
++		if (sel)
++			sel->out = 1;
++		break;
++	case XK_Right:
++		if (text[cursor] != '\0') {
++			cursor = nextrune(+1);
++			break;
++		}
++		if (lines > 0)
++			return;
++		/* fallthrough */
++	case XK_Down:
++		if (sel && sel->right && (sel = sel->right) == next) {
++			curr = next;
++			calcoffsets();
++		}
++		break;
++	case XK_Tab:
++		if (!sel)
++			return;
++		strncpy(text, sel->text, sizeof text - 1);
++		text[sizeof text - 1] = '\0';
++		cursor = strlen(text);
++		match();
++		break;
++	}
++
++draw:
++	drawmenu();
++}
++
++static void
++paste(void)
++{
++	char *p, *q;
++	int di;
++	unsigned long dl;
++	Atom da;
++
++	/* we have been given the current selection, now insert it into input */
++	if (XGetWindowProperty(dpy, win, utf8, 0, (sizeof text / 4) + 1, False,
++	                   utf8, &da, &di, &dl, &dl, (unsigned char **)&p)
++	    == Success && p) {
++		insert(p, (q = strchr(p, '\n')) ? q - p : (ssize_t)strlen(p));
++		XFree(p);
++	}
++	drawmenu();
++}
++
++static void
++readstdin(void)
++{
++	char buf[sizeof text], *p;
++	size_t i, imax = 0, size = 0;
++	unsigned int tmpmax = 0;
++
++	/* read each line from stdin and add it to the item list */
++	for (i = 0; fgets(buf, sizeof buf, stdin); i++) {
++		if (i + 1 >= size / sizeof *items)
++			if (!(items = realloc(items, (size += BUFSIZ))))
++				die("cannot realloc %u bytes:", size);
++		if ((p = strchr(buf, '\n')))
++			*p = '\0';
++		if (!(items[i].text = strdup(buf)))
++			die("cannot strdup %u bytes:", strlen(buf) + 1);
++		items[i].out = 0;
++		drw_font_getexts(drw->fonts, buf, strlen(buf), &tmpmax, NULL);
++		if (tmpmax > inputw) {
++			inputw = tmpmax;
++			imax = i;
++		}
++	}
++	if (items)
++		items[i].text = NULL;
++	inputw = items ? TEXTW(items[imax].text) : 0;
++	lines = MIN(lines, i);
++}
++
++static void
++run(void)
++{
++	XEvent ev;
++
++	while (!XNextEvent(dpy, &ev)) {
++		if (XFilterEvent(&ev, None))
++			continue;
++		switch(ev.type) {
++		case Expose:
++			if (ev.xexpose.count == 0)
++				drw_map(drw, win, 0, 0, mw, mh);
++			break;
++		case FocusIn:
++			/* regrab focus from parent window */
++			if (ev.xfocus.window != win)
++				grabfocus();
++			break;
++		case KeyPress:
++			keypress(&ev.xkey);
++			break;
++		case SelectionNotify:
++			if (ev.xselection.property == utf8)
++				paste();
++			break;
++		case VisibilityNotify:
++			if (ev.xvisibility.state != VisibilityUnobscured)
++				XRaiseWindow(dpy, win);
++			break;
++		}
++	}
++}
++
++static void
++setup(void)
++{
++	int x, y, i, j;
++	unsigned int du;
++	XSetWindowAttributes swa;
++	XIM xim;
++	Window w, dw, *dws;
++	XWindowAttributes wa;
++	XClassHint ch = {"dmenu", "dmenu"};
++#ifdef XINERAMA
++	XineramaScreenInfo *info;
++	Window pw;
++	int a, di, n, area = 0;
++#endif
++	/* init appearance */
++	for (j = 0; j < SchemeLast; j++)
++		scheme[j] = drw_scm_create(drw, colors[j], 2);
++
++	clip = XInternAtom(dpy, "CLIPBOARD",   False);
++	utf8 = XInternAtom(dpy, "UTF8_STRING", False);
++
++	/* calculate menu geometry */
++	bh = drw->fonts->h + 2;
++	lines = MAX(lines, 0);
++	mh = (lines + 1) * bh;
++	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
++#ifdef XINERAMA
++	i = 0;
++	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
++		XGetInputFocus(dpy, &w, &di);
++		if (mon >= 0 && mon < n)
++			i = mon;
++		else if (w != root && w != PointerRoot && w != None) {
++			/* find top-level window containing current input focus */
++			do {
++				if (XQueryTree(dpy, (pw = w), &dw, &w, &dws, &du) && dws)
++					XFree(dws);
++			} while (w != root && w != pw);
++			/* find xinerama screen with which the window intersects most */
++			if (XGetWindowAttributes(dpy, pw, &wa))
++				for (j = 0; j < n; j++)
++					if ((a = INTERSECT(wa.x, wa.y, wa.width, wa.height, info[j])) > area) {
++						area = a;
++						i = j;
++					}
++		}
++		/* no focused window is on screen, so use pointer location instead */
++		if (mon < 0 && !area && XQueryPointer(dpy, root, &dw, &dw, &x, &y, &di, &di, &du))
++			for (i = 0; i < n; i++)
++				if (INTERSECT(x, y, 1, 1, info[i]))
++					break;
++
++		if (centered) {
++			mw = MIN(MAX(max_textw() + promptw, 100), info[i].width);
++			x = info[i].x_org + ((info[i].width  - mw) / 2);
++			y = info[i].y_org + ((info[i].height - mh) / 2);
++		} else {
++			x = info[i].x_org + dmx;
++            y = info[i].y_org + (topbar ? dmy : info[i].height - mh - dmy);
++            mw = (dmw>0 ? dmw : info[i].width);
++		}
++
++		XFree(info);
++	} else
++#endif
++	{
++		if (!XGetWindowAttributes(dpy, parentwin, &wa))
++			die("could not get embedding window attributes: 0x%lx",
++			    parentwin);
++
++		if (centered) {
++			mw = MIN(MAX(max_textw() + promptw, 100), wa.width);
++			x = (wa.width  - mw) / 2;
++			y = (wa.height - mh) / 2;
++		} else {
++            x = dmx;
++            y = topbar ? dmy : wa.height - mh - dmy;
++            mw = (dmw>0 ? dmw : wa.width);
++		}
++	}
++	inputw = MIN(inputw, mw/3);
++	match();
++
++	/* create menu window */
++	swa.override_redirect = True;
++	swa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
++	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
++	win = XCreateWindow(dpy, parentwin, x, y, mw, mh, 0,
++	                    CopyFromParent, CopyFromParent, CopyFromParent,
++	                    CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
++	XSetClassHint(dpy, win, &ch);
++
++	/* open input methods */
++	xim = XOpenIM(dpy, NULL, NULL, NULL);
++	xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
++	                XNClientWindow, win, XNFocusWindow, win, NULL);
++
++	XMapRaised(dpy, win);
++	XSetInputFocus(dpy, win, RevertToParent, CurrentTime);
++	if (embed) {
++		XSelectInput(dpy, parentwin, FocusChangeMask);
++		if (XQueryTree(dpy, parentwin, &dw, &w, &dws, &du) && dws) {
++			for (i = 0; i < du && dws[i] != win; ++i)
++				XSelectInput(dpy, dws[i], FocusChangeMask);
++			XFree(dws);
++		}
++		grabfocus();
++	}
++	drw_resize(drw, mw, mh);
++	drawmenu();
++}
++
++static void
++usage(void)
++{
++	fputs("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
++	      "             [-x xoffset] [-y yoffset] [-wd width]\n"
++	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
++	exit(1);
++}
++
++int
++main(int argc, char *argv[])
++{
++	XWindowAttributes wa;
++	int i, fast = 0;
++
++	for (i = 1; i < argc; i++)
++		/* these options take no arguments */
++		if (!strcmp(argv[i], "-v")) {      /* prints version information */
++			puts("dmenu-"VERSION);
++			exit(0);
++		} else if (!strcmp(argv[i], "-b")) /* appears at the bottom of the screen */
++			topbar = 0;
++		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
++			fast = 1;
++		else if (!strcmp(argv[i], "-c"))   /* centers dmenu on screen */
++			centered = 1;
++		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
++			fstrncmp = strncasecmp;
++			fstrstr = cistrstr;
++		} else if (i + 1 == argc)
++			usage();
++		/* these options take one argument */
++		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
++			lines = atoi(argv[++i]);
++		else if (!strcmp(argv[i], "-x"))   /* window x offset */
++			dmx = atoi(argv[++i]);
++		else if (!strcmp(argv[i], "-y"))   /* window y offset (from bottom up if -b) */
++			dmy = atoi(argv[++i]);
++		else if (!strcmp(argv[i], "-wu"))   /* make dmenu this wide */
++			dmw = atoi(argv[++i]);
++		else if (!strcmp(argv[i], "-m"))
++			mon = atoi(argv[++i]);
++		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
++			prompt = argv[++i];
++		else if (!strcmp(argv[i], "-fn"))  /* font or font set */
++			fonts[0] = argv[++i];
++		else if (!strcmp(argv[i], "-nb"))  /* normal background color */
++			colors[SchemeNorm][ColBg] = argv[++i];
++		else if (!strcmp(argv[i], "-nf"))  /* normal foreground color */
++			colors[SchemeNorm][ColFg] = argv[++i];
++		else if (!strcmp(argv[i], "-sb"))  /* selected background color */
++			colors[SchemeSel][ColBg] = argv[++i];
++		else if (!strcmp(argv[i], "-sf"))  /* selected foreground color */
++			colors[SchemeSel][ColFg] = argv[++i];
++		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
++			embed = argv[++i];
++		else
++			usage();
++
++	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
++		fputs("warning: no locale support\n", stderr);
++	if (!XSetLocaleModifiers(""))
++		fputs("warning: no locale modifiers support\n", stderr);
++	if (!(dpy = XOpenDisplay(NULL)))
++		die("cannot open display");
++	screen = DefaultScreen(dpy);
++	root = RootWindow(dpy, screen);
++	if (!embed || !(parentwin = strtol(embed, NULL, 0)))
++		parentwin = root;
++	if (!XGetWindowAttributes(dpy, parentwin, &wa))
++		die("could not get embedding window attributes: 0x%lx",
++		    parentwin);
++	drw = drw_create(dpy, screen, root, wa.width, wa.height);
++	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
++		die("no fonts could be loaded.");
++	lrpad = drw->fonts->h;
++
++#ifdef __OpenBSD__
++	if (pledge("stdio rpath", NULL) == -1)
++		die("pledge");
++#endif
++
++	if (fast && !isatty(0)) {
++		grabkeyboard();
++		readstdin();
++	} else {
++		readstdin();
++		grabkeyboard();
++	}
++	setup();
++	run();
++
++	return 1; /* unreachable */
++}
+diff --git a/dmenu.o b/dmenu.o
+new file mode 100644
+index 0000000000000000000000000000000000000000..b9f33c9de5ed2b5ea6225bc5f35a078d7beed0e8
+GIT binary patch
+literal 34960
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/drw.o b/drw.o
+new file mode 100644
+index 0000000000000000000000000000000000000000..58349c9ab2a73be7ceae81b7a59df834628b3cfd
+GIT binary patch
+literal 10456
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/patches/dmenu-border-4.9.diff b/patches/dmenu-border-4.9.diff
+new file mode 100644
+index 0000000..89b4437
+--- /dev/null
++++ b/patches/dmenu-border-4.9.diff
+@@ -0,0 +1,25 @@
++diff -up dmenu-4.9-b/config.def.h dmenu-4.9-a/config.def.h
++--- dmenu-4.9-b/config.def.h	2019-02-02 13:55:02.000000000 +0100
+++++ dmenu-4.9-a/config.def.h	2019-05-19 02:10:12.740040403 +0200
++@@ -21,3 +21,6 @@ static unsigned int lines      = 0;
++  * for example: " /?\"&[]"
++  */
++ static const char worddelimiters[] = " ";
+++
+++/* Size of the window border */
+++static const unsigned int border_width = 5;
++diff -up dmenu-4.9-b/dmenu.c dmenu-4.9-a/dmenu.c
++--- dmenu-4.9-b/dmenu.c	2019-02-02 13:55:02.000000000 +0100
+++++ dmenu-4.9-a/dmenu.c	2019-05-19 02:11:20.966710117 +0200
++@@ -654,9 +654,10 @@ setup(void)
++ 	swa.override_redirect = True;
++ 	swa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
++ 	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
++-	win = XCreateWindow(dpy, parentwin, x, y, mw, mh, 0,
+++	win = XCreateWindow(dpy, parentwin, x, y, mw, mh, border_width,
++ 	                    CopyFromParent, CopyFromParent, CopyFromParent,
++ 	                    CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
+++	XSetWindowBorder(dpy, win, scheme[SchemeSel][ColBg].pixel);
++ 	XSetClassHint(dpy, win, &ch);
++ 
++ 	/* open input methods */
+diff --git a/patches/dmenu-center-20191105-f1ca0d0.diff b/patches/dmenu-center-20191105-f1ca0d0.diff
+new file mode 100644
+index 0000000..3f789df
+--- /dev/null
++++ b/patches/dmenu-center-20191105-f1ca0d0.diff
+@@ -0,0 +1,119 @@
++From f1ca0d0c35769f3197781eb875f2359a9d33007d Mon Sep 17 00:00:00 2001
++From: "nihal@nihaljere.xyz" <Nihal Jere>
++Date: Tue, 5 Nov 2019 18:33:00 -0600
++Subject: [PATCH] Improved center patch. Can now be enabled using a flag
++
++---
++ config.def.h |  1 +
++ dmenu.1      |  3 +++
++ dmenu.c      | 39 ++++++++++++++++++++++++++++++++-------
++ 3 files changed, 36 insertions(+), 7 deletions(-)
++
++diff --git a/config.def.h b/config.def.h
++index 1edb647..7ee3247 100644
++--- a/config.def.h
+++++ b/config.def.h
++@@ -2,6 +2,7 @@
++ /* Default settings; can be overriden by command line. */
++ 
++ static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
+++static int centered = 0;                    /* -c option; centers dmenu on screen */
++ /* -fn option overrides fonts[0]; default X11 font or font set */
++ static const char *fonts[] = {
++ 	"monospace:size=10"
++diff --git a/dmenu.1 b/dmenu.1
++index 323f93c..c036baa 100644
++--- a/dmenu.1
+++++ b/dmenu.1
++@@ -40,6 +40,9 @@ which lists programs in the user's $PATH and runs the result in their $SHELL.
++ .B \-b
++ dmenu appears at the bottom of the screen.
++ .TP
+++.B \-c
+++dmenu appears centered on the screen.
+++.TP
++ .B \-f
++ dmenu grabs the keyboard before reading stdin if not reading from a tty. This
++ is faster, but will lock up X until stdin reaches end\-of\-file.
++diff --git a/dmenu.c b/dmenu.c
++index 65f25ce..bc7d087 100644
++--- a/dmenu.c
+++++ b/dmenu.c
++@@ -89,6 +89,15 @@ calcoffsets(void)
++ 			break;
++ }
++ 
+++static int
+++max_textw(void)
+++{
+++	int len = 0;
+++	for (struct item *item = items; item && item->text; item++)
+++		len = MAX(TEXTW(item->text), len);
+++	return len;
+++}
+++
++ static void
++ cleanup(void)
++ {
++@@ -611,6 +620,7 @@ setup(void)
++ 	bh = drw->fonts->h + 2;
++ 	lines = MAX(lines, 0);
++ 	mh = (lines + 1) * bh;
+++	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
++ #ifdef XINERAMA
++ 	i = 0;
++ 	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
++@@ -637,9 +647,16 @@ setup(void)
++ 				if (INTERSECT(x, y, 1, 1, info[i]))
++ 					break;
++ 
++-		x = info[i].x_org;
++-		y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
++-		mw = info[i].width;
+++		if (centered) {
+++			mw = MIN(MAX(max_textw() + promptw, 100), info[i].width);
+++			x = info[i].x_org + ((info[i].width  - mw) / 2);
+++			y = info[i].y_org + ((info[i].height - mh) / 2);
+++		} else {
+++			x = info[i].x_org;
+++			y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
+++			mw = info[i].width;
+++		}
+++
++ 		XFree(info);
++ 	} else
++ #endif
++@@ -647,11 +664,17 @@ setup(void)
++ 		if (!XGetWindowAttributes(dpy, parentwin, &wa))
++ 			die("could not get embedding window attributes: 0x%lx",
++ 			    parentwin);
++-		x = 0;
++-		y = topbar ? 0 : wa.height - mh;
++-		mw = wa.width;
+++
+++		if (centered) {
+++			mw = MIN(MAX(max_textw() + promptw, 100), wa.width);
+++			x = (wa.width  - mw) / 2;
+++			y = (wa.height - mh) / 2;
+++		} else {
+++			x = 0;
+++			y = topbar ? 0 : wa.height - mh;
+++			mw = wa.width;
+++		}
++ 	}
++-	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
++ 	inputw = MIN(inputw, mw/3);
++ 	match();
++ 
++@@ -709,6 +732,8 @@ main(int argc, char *argv[])
++ 			topbar = 0;
++ 		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
++ 			fast = 1;
+++		else if (!strcmp(argv[i], "-c"))   /* centers dmenu on screen */
+++			centered = 1;
++ 		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
++ 			fstrncmp = strncasecmp;
++ 			fstrstr = cistrstr;
++-- 
++2.23.0
++
+diff --git a/patches/dmenu-xyw-4.7.diff b/patches/dmenu-xyw-4.7.diff
+new file mode 100644
+index 0000000..4a25fb0
+--- /dev/null
++++ b/patches/dmenu-xyw-4.7.diff
+@@ -0,0 +1,91 @@
++diff --git a/dmenu.1 b/dmenu.1
++index d3ab805..5301910 100644
++--- a/dmenu.1
+++++ b/dmenu.1
++@@ -53,6 +53,24 @@ dmenu matches menu items case insensitively.
++ .BI \-h " height"
++ dmenu uses a menu line of at least 'height' pixels tall, but no less than 8.
++ .TP
+++.BI \-x " xoffset"
+++dmenu is placed at this offset measured from the left side of the monitor.
+++Can be negative.
+++If option
+++.B \-m
+++is present, the measurement will use the given monitor.
+++.TP
+++.BI \-y " yoffset"
+++dmenu is placed at this offset measured from the top of the monitor.  If the
+++.B \-b
+++option is used, the offset is measured from the bottom.  Can be negative.
+++If option
+++.B \-m
+++is present, the measurement will use the given monitor.
+++.TP
+++.BI \-w " width"
+++sets the width of the dmenu window.
+++.TP
++ .BI \-m " monitor"
++ dmenu is displayed on the monitor number supplied. Monitor numbers are starting
++ from 0.
++diff --git a/dmenu.c b/dmenu.c
++index a07f8e3..9e0c51c 100644
++--- a/dmenu.c
+++++ b/dmenu.c
++@@ -36,6 +36,9 @@ struct item {
++ static char text[BUFSIZ] = "";
++ static char *embed;
++ static int bh, mw, mh;
+++static int dmx = 0; /* put dmenu at this x offset */
+++static int dmy = 0; /* put dmenu at this y offset (measured from the bottom if topbar is 0) */
+++static unsigned int dmw = 0; /* make dmenu this wide */
++ static int inputw = 0, promptw;
++ static int lrpad; /* sum of left and right padding */
++ static size_t cursor;
++@@ -705,19 +708,19 @@ setup(void)
++ 				if (INTERSECT(x, y, 1, 1, info[i]))
++ 					break;
++ 
++-		x = info[i].x_org;
++-		y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
++-		mw = info[i].width;
+++		x = info[i].x_org + dmx;
+++		y = info[i].y_org + (topbar ? dmy : info[i].height - mh - dmy);
+++		mw = (dmw>0 ? dmw : info[i].width);
++ 		XFree(info);
++ 	} else
++ #endif
++ 	{
++ 		if (!XGetWindowAttributes(dpy, parentwin, &wa))
++ 			die("could not get embedding window attributes: 0x%lx",
++ 			    parentwin);
++-		x = 0;
++-		y = topbar ? 0 : wa.height - mh;
++-		mw = wa.width;
+++		x = dmx;
+++		y = topbar ? dmy : wa.height - mh - dmy;
+++		mw = (dmw>0 ? dmw : wa.width);
++ 	}
++ 	promptw = (prompt && *prompt) ? TEXTW(prompt) : 0;
++ 	inputw = MIN(inputw, mw/3);
++@@ -755,7 +758,7 @@ static void
++ usage(void)
++ {
++ 	fputs("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
++-	      "             [-h height]\n"
+++	      "             [-h height] [-x xoffset] [-y yoffset] [-w width]\n"
++ 	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
++ 	exit(1);
++ }
++@@ -783,6 +786,12 @@ main(int argc, char *argv[])
++ 		/* these options take one argument */
++ 		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
++ 			lines = atoi(argv[++i]);
+++		else if (!strcmp(argv[i], "-x"))   /* window x offset */
+++			dmx = atoi(argv[++i]);
+++		else if (!strcmp(argv[i], "-y"))   /* window y offset (from bottom up if -b) */
+++			dmy = atoi(argv[++i]);
+++		else if (!strcmp(argv[i], "-w"))   /* make dmenu this wide */
+++			dmw = atoi(argv[++i]);
++ 		else if (!strcmp(argv[i], "-m"))
++ 			mon = atoi(argv[++i]);
++ 		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
+diff --git a/stest b/stest
+new file mode 100755
+index 0000000000000000000000000000000000000000..38c82b6df0521a96994253303aed64afc9451bd1
+GIT binary patch
+literal 17680
+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
+T#kE0c{h!_~BrFC61Izv&!$GWi
+
+literal 0
+HcmV?d00001
+
+diff --git a/stest.o b/stest.o
+new file mode 100644
+index 0000000000000000000000000000000000000000..09f52ad9656b5f24cc9e8821f122b65e89eff716
+GIT binary patch
+literal 5280
+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
+Xks^tG{q!tr<Ub|yKOy;2*Y5v6<4$C%
+
+literal 0
+HcmV?d00001
+
+diff --git a/util.o b/util.o
+new file mode 100644
+index 0000000000000000000000000000000000000000..12c3b0ae5b73bd3fb13c50d2db7ffb86aa95c8d3
+GIT binary patch
+literal 2208
+zcmbVM&rcIk5S~($f<P;Jz~G^Wr)d-2P!a<YH3bSRWFw*_Mh}+KZqvq=lI>#9Xsi)U
+z8bZP!;K4+XhIsJc!GtCrz>|709tkHCi9fjLL8&v__vp*Iy)fkQ&HLt?dDHh}?+<Gu
+z4K5c5bHN3u%>)ZDeW2!tEjJ8p&<ay(>96`=`vX#H$z%bw6lL9NNn?FlDZ;`Udg@}?
+z?DYmC?2<RAv1xBG%I3VmC#;A$-r#e#V&Mz+)WTQnrG;-;88N9YHJ%8dqhhtrP+46%
+zj}x4IQ%hUw@*>;B*?J@MSY(8G)a3~CuSZy8H)nib(1GGTOj<fat{G4tzN=uV()XQJ
+z_1DMZ-L~ES`6Fw7j9J=H#e%ObYb}CWqb;%6N$bD*s65}QE?d1=#Pzp{cs83)^aG3z
+z4fXp2qZg-w{<BJtLVchetpd32Tn5*I&(+o1<XOS0oyZ^Ou^)s3?Y_qi<L#R~*2iPV
+zc<gGshcnJVjW)v1ic{3>c(MR){BtrlR&p{oNS8qpxS>g!)m%6H-*c6zSLa|YnR{)B
+z9a8_+ULkiFhmUJypnY}Xl{$QH9iEQZsZOL0KZZQ@Df+X{4Y~0;dYCseStS9AHq;Ht
+zj1C1esT&5wMzx8-0WCH$GIC`&8jB7LYQr(Om6|g$vt|lXbMs~b=1`e8Kwrq1pjR&-
+zE@PR&u>tWAjz5*EJ>xu`EbXb_S2=IjznApwlKzv#dnJBL;${7|#M6F?b$2AbL*jQi
+zPyNtc5qdXWa5U<lo~Pjb=#!D2hOl$o5xh7TPztwmW_$+GG^&^uo}p*sim5M{pd{mF
+z9F&<t0Td%o6OxCN5GaX!E~n3;WHxW=3O@JK1v8$wi8{*G)3KBh&*`F#eWM>U=_lJ?
+zL>M`;X1*WQSyd~1!Y&-NS798oedbSI><8^7l@c$N-VfPH9K_qd5M#D=NlRv@Pa#J&
+z_nRN$HG2?c6YGn9MNF(OFpL56yM=(`Bp1+~lTG9ar1va*S(k7k9ke$%C*Mh`ljixC
+zXd;>Y_gur6)A?->i6(v*ogd|jd~trXjD2mS;5A==gCl(-L=B3I{ATp+XGifOCnsql
+W885fT(D&IX|2OYHy{D`?_WXaPYye;Y
+
+literal 0
+HcmV?d00001
+
+-- 
+2.25.0
+
