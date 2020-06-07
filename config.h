@@ -18,6 +18,9 @@ static const char *colors[SchemeLast][2] = {
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
 static unsigned int lines      = 0;
 
+/* -n option; preselected item starting from 0 */
+static unsigned int preselected = 0;
+
 /*
  * Characters not considered part of a word while deleting words
  * for example: " /?\"&[]"
@@ -26,7 +29,6 @@ static const char worddelimiters[] = " ";
 
 /* Size of the window border */
 static unsigned int border_width = 0;
-
 
 static const unsigned int baralpha = 0xd0;
 static const unsigned int borderalpha = OPAQUE;
@@ -37,4 +39,3 @@ static unsigned int alphas[][3]      = {
 	[SchemeSel]  = { OPAQUE, OPAQUE, borderalpha },
 	[SchemeOut]  = { OPAQUE, OPAQUE, borderalpha },
 };
-
