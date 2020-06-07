@@ -38,3 +38,5 @@ static unsigned int alphas[][3]      = {
 	[SchemeOut]  = { OPAQUE, OPAQUE, borderalpha },
 };
 
+/* -n option; preselected item starting from 0 */
+static unsigned int preselected = 0;
